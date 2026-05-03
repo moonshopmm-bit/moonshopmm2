@@ -126,6 +126,19 @@
 
             <div class="glass p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
                 <div class="bg-blue-950/40 rounded-[2rem] h-56 mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/a/a9/ZombieBat.png/revision/latest/scale-to-width-down/268?cb=20221017185931g" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 12</span>
+                </div>
+                <h3 class="text-2xl font-bold">Candy</h3>
+                <p class="text-gray-500 text-sm mb-6 uppercase font-bold">Godly</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-2xl font-extrabold">$15.500 <small class="text-blue-400 text-xs">COP</small></span>
+                    <button onclick="openModal('Bat', 15.500, 12)" class="bg-white text-black px-6 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition">Comprar</button>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[2rem] h-56 mb-6 flex items-center justify-center border border-white/5 relative">
                     <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/f/f8/BatwingUpdated2.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
                     <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 22</span>
                 </div>
@@ -195,7 +208,7 @@
                     <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 12</span>
                 </div>
                 <h3 class="text-2xl font-bold">Luger</h3>
-                <p class="text-gray-500 text-sm mb-6 uppercase font-bold">Ancient</p>
+                <p class="text-gray-500 text-sm mb-6 uppercase font-bold">Godly</p>
                 <div class="flex justify-between items-center">
                     <span class="text-2xl font-extrabold">$7.000 <small class="text-blue-400 text-xs">COP</small></span>
                     <button onclick="openModal('Luger', 7000, 12)" class="bg-white text-black px-6 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition">Comprar</button>
@@ -205,7 +218,9 @@
         </div>
     </section>
 
-    <div id="paymentModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+             </div>
+
+     <div id="paymentModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
         <div class="glass max-w-2xl w-full p-8 rounded-[3rem] relative border border-white/10 shadow-2xl">
             <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 text-3xl hover:text-white transition">&times;</button>
             
