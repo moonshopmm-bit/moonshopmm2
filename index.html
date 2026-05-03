@@ -47,6 +47,10 @@
         .input-field:focus { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
         
         label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-left: 4px; margin-bottom: 4px; display: block; }
+        
+        /* Estrellas */
+        .star-rating { color: #475569; cursor: pointer; transition: color 0.2s; }
+        .star-rating.active { color: #fbbf24; }
     </style>
 </head>
 <body class="bg-gradient-moon min-h-screen">
@@ -57,6 +61,7 @@
         <div class="flex space-x-6 md:space-x-8 text-[11px] md:text-sm font-bold text-gray-300 uppercase tracking-widest">
             <a href="#" class="hover:text-blue-400 transition border-b-2 border-transparent hover:border-blue-400 pb-1">Inicio</a>
             <a href="#catalogo" class="hover:text-blue-400 transition border-b-2 border-transparent hover:border-blue-400 pb-1">Catálogo</a>
+            <a href="#comentarios" class="hover:text-blue-400 transition border-b-2 border-transparent hover:border-blue-400 pb-1">Reseñas</a>
             <a href="https://mail.google.com/mail/?view=cm&fs=1&to=moonshopmm@gmail.com&su=Soporte/Queja%20Moon%20Shop" target="_blank" class="hover:text-blue-400 transition border-b-2 border-transparent hover:border-blue-400 pb-1">Soporte</a>
         </div>
 
@@ -220,6 +225,38 @@
         </div>
     </section>
 
+    <!-- SECCIÓN DE COMENTARIOS Y CALIFICACIÓN -->
+    <section id="comentarios" class="max-w-4xl mx-auto px-6 py-16 border-t border-white/5 scroll-mt-24">
+        <div class="text-center mb-12">
+            <h3 class="text-3xl font-black uppercase tracking-tighter">Reseñas de Clientes</h3>
+            <p class="text-gray-400 text-sm mt-2">Lo que dicen nuestros compradores.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Formulario -->
+            <div class="md:col-span-1 space-y-4">
+                <div class="glass p-6 rounded-[2rem] border border-blue-500/20">
+                    <h4 class="font-bold mb-4 text-blue-400 text-sm uppercase">Deja tu opinión</h4>
+                    <div class="flex gap-1 mb-4" id="star-input">
+                        <span class="star-rating text-2xl" data-value="1">★</span>
+                        <span class="star-rating text-2xl" data-value="2">★</span>
+                        <span class="star-rating text-2xl" data-value="3">★</span>
+                        <span class="star-rating text-2xl" data-value="4">★</span>
+                        <span class="star-rating text-2xl" data-value="5">★</span>
+                    </div>
+                    <input type="text" id="comm-name" placeholder="Tu Usuario" class="input-field mb-3">
+                    <textarea id="comm-text" placeholder="¿Qué tal fue tu compra?" class="input-field mb-3 h-24 resize-none"></textarea>
+                    <button onclick="saveComment()" class="w-full bg-blue-600 py-3 rounded-xl font-bold hover:bg-blue-500 transition text-sm shadow-lg">Publicar</button>
+                </div>
+            </div>
+
+            <!-- Lista de Comentarios -->
+            <div class="md:col-span-2 space-y-4 max-h-[500px] overflow-y-auto pr-2" id="comments-container">
+                <!-- Se cargan vía JS -->
+            </div>
+        </div>
+    </section>
+
     <div id="paymentModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
         <div class="glass max-w-2xl w-full p-8 rounded-[3rem] relative border border-white/10 shadow-2xl overflow-y-auto max-h-[95vh]">
             <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 text-3xl hover:text-white transition">&times;</button>
@@ -310,23 +347,93 @@
         let currentItemPrice = 0;
         let currentItemBaseName = "";
         let currentMaxStock = 0;
-
         let resendCount = 0;
         let isWaiting = false;
 
+        // --- SISTEMA DE COMENTARIOS ---
+        let selectedStars = 0;
+        const starElements = document.querySelectorAll('.star-rating');
+
+        starElements.forEach(star => {
+            star.addEventListener('click', () => {
+                selectedStars = parseInt(star.getAttribute('data-value'));
+                updateStarDisplay();
+            });
+        });
+
+        function updateStarDisplay() {
+            starElements.forEach(star => {
+                const val = parseInt(star.getAttribute('data-value'));
+                star.classList.toggle('active', val <= selectedStars);
+            });
+        }
+
+        function saveComment() {
+            const nameInput = document.getElementById('comm-name');
+            const textInput = document.getElementById('comm-text');
+            
+            if (!nameInput.value || !textInput.value || selectedStars === 0) {
+                alert("Por favor completa tu nombre, el comentario y selecciona las estrellas.");
+                return;
+            }
+
+            const newComment = {
+                name: nameInput.value,
+                text: textInput.value,
+                stars: selectedStars,
+                date: new Date().toLocaleDateString()
+            };
+
+            // Guardar en LocalStorage para que no se borre al actualizar
+            let comments = JSON.parse(localStorage.getItem('moonShopComments')) || [];
+            comments.unshift(newComment);
+            localStorage.setItem('moonShopComments', JSON.stringify(comments));
+
+            // Resetear form
+            nameInput.value = "";
+            textInput.value = "";
+            selectedStars = 0;
+            updateStarDisplay();
+            renderComments();
+        }
+
+        function renderComments() {
+            const container = document.getElementById('comments-container');
+            const comments = JSON.parse(localStorage.getItem('moonShopComments')) || [];
+            
+            if (comments.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 py-10">Aún no hay reseñas. ¡Sé el primero!</p>`;
+                return;
+            }
+
+            container.innerHTML = comments.map(c => `
+                <div class="glass p-5 rounded-3xl border border-white/5 animate-fadeIn">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span class="text-blue-400 font-bold text-sm">@${c.name}</span>
+                            <div class="text-yellow-500 text-xs">${"★".repeat(c.stars)}${"☆".repeat(5-c.stars)}</div>
+                        </div>
+                        <span class="text-[10px] text-gray-500 font-bold">${c.date}</span>
+                    </div>
+                    <p class="text-gray-300 text-sm italic">"${c.text}"</p>
+                </div>
+            `).join('');
+        }
+
+        // Cargar al inicio
+        window.onload = renderComments;
+
+        // --- FUNCIONES TIENDA ---
         function openModal(name, price, stock) { 
             currentItemBaseName = name;
             currentItemPrice = price;
             currentMaxStock = stock;
-            
             modal.classList.remove('hidden'); 
             modal.classList.remove('fs-success'); 
             document.getElementById('modalItemName').innerText = name; 
-            
             const qtyInput = document.getElementById('itemQuantity');
             qtyInput.value = 1;
             document.getElementById('stockAvailable').innerText = "DISPONIBLE: " + stock;
-            
             updateTotal();
         }
 
@@ -335,78 +442,19 @@
         function updateTotal() {
             const qtyInput = document.getElementById('itemQuantity');
             let qty = parseInt(qtyInput.value);
-
             if (qty > currentMaxStock) {
-                alert("⚠️ Error: Solo tenemos " + currentMaxStock + " unidades en stock de este item.");
+                alert("⚠️ Solo hay " + currentMaxStock + " en stock.");
                 qtyInput.value = currentMaxStock;
                 qty = currentMaxStock;
             }
-
             const total = qty * currentItemPrice;
             const formatted = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(total);
-            
             document.getElementById('totalPriceDisplay').innerText = formatted;
             document.getElementById('hiddenItem').value = `${currentItemBaseName} (Cant: ${qty} - Total: ${formatted})`;
         }
 
-        function resendForm() {
-            if (isWaiting) return;
-
-            resendCount++;
-            let waitTime;
-
-            if (resendCount === 1) waitTime = 1;
-            else if (resendCount === 2) waitTime = 3;
-            else if (resendCount === 3) waitTime = 5;
-            else waitTime = 10;
-
-            const waitMs = waitTime * 60 * 1000;
-            startCooldown(waitMs);
-
-            modal.classList.remove('fs-success');
-            const btn = document.getElementById('submit-btn');
-            btn.innerText = "REENVIANDO...";
-            form.requestSubmit();
-        }
-
-        function startCooldown(duration) {
-            isWaiting = true;
-            const resendBtn = document.querySelector('[onclick="resendForm()"]');
-            const originalText = "Reenviar Información";
-            
-            let timeLeft = duration / 1000;
-
-            const interval = setInterval(() => {
-                const mins = Math.floor(timeLeft / 60);
-                const secs = Math.floor(timeLeft % 60);
-                
-                resendBtn.innerText = `Espera ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-                resendBtn.disabled = true;
-                resendBtn.style.opacity = "0.5";
-                resendBtn.style.cursor = "not-allowed";
-
-                timeLeft--;
-
-                if (timeLeft < 0) {
-                    clearInterval(interval);
-                    isWaiting = false;
-                    resendBtn.innerText = originalText;
-                    resendBtn.disabled = false;
-                    resendBtn.style.opacity = "1";
-                    resendBtn.style.cursor = "pointer";
-                }
-            }, 1000);
-        }
-
         form.onsubmit = async (e) => {
             e.preventDefault();
-            
-            const qty = parseInt(document.getElementById('itemQuantity').value);
-            if (qty > currentMaxStock) {
-                alert("⚠️ No puedes comprar más de la cantidad disponible (" + currentMaxStock + ")");
-                return;
-            }
-
             const btn = document.getElementById('submit-btn');
             btn.innerText = "PROCESANDO ENVÍO...";
             btn.disabled = true;
@@ -421,33 +469,30 @@
             }
         };
 
-        function toggleChat() { 
-            document.getElementById('chat-panel').classList.toggle('active'); 
+        function toggleChat() {
+            document.getElementById('chat-panel').classList.toggle('active');
         }
 
-        const aiForm = document.getElementById('ai-form');
-        const chatContent = document.getElementById('chat-content');
-
-        aiForm.onsubmit = (e) => {
+        document.getElementById('ai-form').onsubmit = (e) => {
             e.preventDefault();
             const input = document.getElementById('ai-input');
-            const msg = input.value.trim();
-            if(!msg) return;
-
+            const val = input.value.trim();
+            if(!val) return;
+            
+            const cont = document.getElementById('chat-content');
             const userDiv = document.createElement('div');
             userDiv.className = "message-bubble user-msg";
-            userDiv.innerText = msg;
-            chatContent.appendChild(userDiv);
+            userDiv.innerText = val;
+            cont.appendChild(userDiv);
             input.value = "";
 
             setTimeout(() => {
                 const aiDiv = document.createElement('div');
                 aiDiv.className = "message-bubble ai-msg";
-                aiDiv.innerText = "Estamos validando los pagos a nombre de Darwin Rincón al 321 434 6720. ¿Tienes alguna otra duda?";
-                chatContent.appendChild(aiDiv);
-                chatContent.scrollTop = chatContent.scrollHeight;
-            }, 600);
-            chatContent.scrollTop = chatContent.scrollHeight;
+                aiDiv.innerText = "Recuerda que atendemos entregas por orden de llegada. El pago es al 321 434 6720.";
+                cont.appendChild(aiDiv);
+                cont.scrollTop = cont.scrollHeight;
+            }, 800);
         };
     </script>
 </body>
