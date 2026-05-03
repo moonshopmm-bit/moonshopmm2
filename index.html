@@ -63,9 +63,9 @@
 <body class="bg-gradient-moon min-h-screen">
 
     <!-- Navbar Optimizada -->
-    <nav class="flex justify-between items-center px-6 md:px-8 py-6 max-w-7xl mx-auto relative z-50">
+    <nav class="flex flex-col md:flex-row justify-between items-center px-6 md:px-8 py-6 max-w-7xl mx-auto relative z-50 gap-4">
         <h1 class="text-xl md:text-2xl font-extrabold tracking-tighter text-blue-400">MOON <span class="text-white">SHOP</span></h1>
-        <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-300">
+        <div class="flex space-x-6 md:space-x-8 text-[10px] md:text-sm font-bold uppercase tracking-widest text-gray-300">
             <a href="#" class="hover:text-blue-400 transition">Inicio</a>
             <a href="#catalogo" class="hover:text-blue-400 transition">Catálogo</a>
             <a href="https://mail.google.com/mail/?view=cm&fs=1&to=moonshopmm@gmail.com&su=Soporte/Queja%20Moon%20Shop" target="_blank" class="hover:text-blue-400 transition">Soporte</a>
@@ -93,140 +93,140 @@
     </section>
 
     <!-- Catálogo Adaptativo -->
-    <section id="catalogo" class="max-w-7xl mx-auto px-6 md:px-8 py-16 md:py-24 border-t border-white/5 scroll-mt-24">
+    <section id="catalogo" class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 border-t border-white/5 scroll-mt-24">
         <div class="text-center mb-12 md:mb-16">
             <h3 class="text-3xl font-black mb-2 uppercase tracking-tighter">Catálogo Completo</h3>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
             
             <!-- Items (Copiados exactamente igual) -->
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/b/b5/HarvesterImproved.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 8</span>
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/b/b5/HarvesterImproved.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 8</span>
                 </div>
-                <h3 class="text-xl md:text-2xl font-bold">Harvester</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Ancient</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$27.000 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Harvester', 27000, 8)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
-                </div>
-            </div>
-
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/e/eb/Icebreaker.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 6</span>
-                </div>
-                <h3 class="text-xl md:text-2xl font-bold">Icebreaker</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Godly</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$12.500 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Icebreaker', 12500, 6)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Harvester</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Ancient</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$27k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Harvester', 27000, 8)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
                 </div>
             </div>
 
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Updated_Candy.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 6</span>
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/e/eb/Icebreaker.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 6</span>
                 </div>
-                <h3 class="text-xl md:text-2xl font-bold">Candy</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Godly</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$11.500 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Candy', 11500, 6)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
-                </div>
-            </div>
-
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/a/a9/ZombieBat.png/revision/latest?cb=20221017185931" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 12</span>
-                </div>
-                <h3 class="text-xl md:text-2xl font-bold">Bat (Zombie)</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Godly</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$15.500 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Candy', 15500, 12)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Icebreaker</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Godly</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$12.5k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Icebreaker', 12500, 6)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
                 </div>
             </div>
 
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/f/f8/BatwingUpdated2.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 22</span>
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Updated_Candy.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 6</span>
                 </div>
-                <h3 class="text-xl md:text-2xl font-bold">Batwing</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Ancient</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$13.000 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Batwing', 13000, 22)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
-                </div>
-            </div>
-
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Icewingknife.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 1</span>
-                </div>
-                <h3 class="text-xl md:text-2xl font-bold">Icewing</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Ancient</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$3.500 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Icewing', 3500, 1)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Candy</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Godly</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$11.5k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Candy', 11500, 6)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
                 </div>
             </div>
 
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/6/6d/Sugar_v2.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 8</span>
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/a/a9/ZombieBat.png/revision/latest?cb=20221017185931" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 12</span>
                 </div>
-                <h3 class="text-xl md:text-2xl font-bold">Sugar</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Godly</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$7.000 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Sugar', 7000, 8)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
-                </div>
-            </div>
-
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/8/89/Icepiercer.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 5</span>
-                </div>
-                <h3 class="text-xl md:text-2xl font-bold">Icepiercer</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Ancient</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$21.000 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Icepiercer', 21000, 5)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Bat (Zombie)</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Godly</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$15.5k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Candy', 15500, 12)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
                 </div>
             </div>
 
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/5/5e/ElderwoodScythev2.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 12</span>
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/f/f8/BatwingUpdated2.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 22</span>
                 </div>
-                <h3 class="text-xl md:text-2xl font-bold">Elderwood Scythe</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Ancient</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$7.000 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Elderwood Scythe', 7000, 12)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Batwing</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Ancient</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$13k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Batwing', 13000, 22)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
                 </div>
             </div>
 
-            <div class="glass p-5 md:p-6 rounded-[2.5rem] hover:scale-[1.02] transition-all group">
-                <div class="bg-blue-950/40 rounded-[2rem] h-48 md:h-56 mb-6 flex items-center justify-center border border-white/5 relative">
-                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/f/fa/LugerUpdated.png" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform">
-                    <span class="absolute top-4 right-4 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 12</span>
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Icewingknife.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 1</span>
                 </div>
-                <h3 class="text-xl md:text-2xl font-bold">Luger</h3>
-                <p class="text-gray-500 text-xs md:text-sm mb-6 uppercase font-bold">Godly</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-xl md:text-2xl font-extrabold">$7.000 <small class="text-blue-400 text-xs">COP</small></span>
-                    <button onclick="openModal('Luger', 7000, 12)" class="bg-white text-black px-5 py-3 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-sm md:text-base">Comprar</button>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Icewing</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Ancient</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$3.5k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Icewing', 3500, 1)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/6/6d/Sugar_v2.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 8</span>
+                </div>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Sugar</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Godly</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$7k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Sugar', 7000, 8)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/8/89/Icepiercer.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 5</span>
+                </div>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Icepiercer</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Ancient</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$21k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Icepiercer', 21000, 5)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/5/5e/ElderwoodScythev2.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 12</span>
+                </div>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Elderwood Scythe</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Ancient</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$7k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Elderwood Scythe', 7000, 12)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] hover:scale-[1.02] transition-all group">
+                <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[2rem] h-32 md:h-56 mb-4 md:mb-6 flex items-center justify-center border border-white/5 relative">
+                    <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/f/fa/LugerUpdated.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                    <span class="absolute top-2 right-2 md:top-4 md:right-4 bg-black/60 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400">STOCK: 12</span>
+                </div>
+                <h3 class="text-sm md:text-2xl font-bold truncate">Luger</h3>
+                <p class="text-gray-500 text-[8px] md:text-sm mb-3 md:mb-6 uppercase font-bold">Godly</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <span class="text-xs md:text-2xl font-extrabold">$7k <small class="text-blue-400 text-[8px] md:text-xs">COP</small></span>
+                    <button onclick="openModal('Luger', 7000, 12)" class="w-full md:w-auto bg-white text-black px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-base">Comprar</button>
                 </div>
             </div>
 
@@ -417,43 +417,19 @@
             btn.disabled = true;
             const formData = new FormData(form);
             const response = await fetch('https://formspree.io/f/mdabaowk', {
-                method: 'POST', body: formData, headers: { 'Accept': 'application/json' }
+                method: 'POST', 
+                body: formData, 
+                headers: { 'Accept': 'application/json' }
             });
+            
             if (response.ok) {
                 modal.classList.add('fs-success');
-                btn.disabled = false;
-                btn.innerText = "Enviar Pedido Ahora";
             }
+            btn.innerText = "Enviar Pedido Ahora";
+            btn.disabled = false;
         };
 
         function toggleChat() { document.getElementById('chat-panel').classList.toggle('active'); }
-        
-        // Mantener tu lógica de IA aquí abajo
-        const aiForm = document.getElementById('ai-form');
-        const aiInput = document.getElementById('ai-input');
-        const chatContent = document.getElementById('chat-content');
-
-        aiForm.onsubmit = (e) => {
-            e.preventDefault();
-            const msg = aiInput.value.trim();
-            if(!msg) return;
-
-            // User msg
-            const userDiv = document.createElement('div');
-            userDiv.className = "message-bubble user-msg";
-            userDiv.innerText = msg;
-            chatContent.appendChild(userDiv);
-            aiInput.value = "";
-
-            // Fake AI Response (puedes añadir tu lógica aquí)
-            setTimeout(() => {
-                const aiDiv = document.createElement('div');
-                aiDiv.className = "message-bubble ai-msg";
-                aiDiv.innerText = "Estamos procesando tu duda. El número Nequi oficial es 321 434 6720.";
-                chatContent.appendChild(aiDiv);
-                chatContent.scrollTop = chatContent.scrollHeight;
-            }, 600);
-        };
     </script>
 </body>
 </html>
