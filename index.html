@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Shop | MM2 Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: white; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .blue-glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        .discord-glow { box-shadow: 0 0 15px rgba(88, 101, 242, 0.4); }
+        .bg-gradient-moon { background: radial-gradient(circle at top right, #1e3a8a 0%, #020617 60%); }
+        
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-weapon { animation: float 4s ease-in-out infinite; }
+        .animate-weapon-delay { animation: float 4s ease-in-out infinite; animation-delay: 2s; }
+
+        #chat-panel, #cart-panel { 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transform: translateY(20px) scale(0.9); 
+            opacity: 0; 
+            pointer-events: none; 
+            max-width: 90vw; 
+        }
+        #chat-panel.active, #cart-panel.active { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+        .message-bubble { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 14px; line-height: 1.4; margin-bottom: 10px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .ai-msg { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .user-msg { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        
+        [data-fs-success] { display: none; }
+        .fs-success [data-fs-success] { display: block; }
+        .fs-success #my-form { display: none; }
+
+        .input-field { 
+            width: 100%; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 12px 16px; 
+            border-radius: 14px; 
+            color: white; 
+            outline: none; 
+            transition: all 0.3s;
+            font-size: 15px; 
+        }
+        .input-field:focus { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); box-shadow: 0 0 15px rgba(59, 130, 246, 0.1); }
+        
+        label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #94a3b8; margin-left: 4px; margin-bottom: 4px; display: block; letter-spacing: 0.05em; }
+        #chat-content::-webkit-scrollbar, #cart-items::-webkit-scrollbar { width: 4px; }
+        #chat-content::-webkit-scrollbar-thumb, #cart-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        #cart-toast {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 1rem;
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 100;
+        }
+        #cart-toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="bg-gradient-moon min-h-screen">
+
+    <nav class="flex flex-col md:flex-row justify-between items-center px-6 md:px-8 py-6 max-w-7xl mx-auto relative z-50 gap-4">
+        <h1 class="text-xl md:text-2xl font-extrabold tracking-tighter text-blue-400">MOON <span class="text-white">SHOP</span></h1>
+        <div class="flex space-x-6 md:space-x-8 text-[10px] md:text-sm font-bold uppercase tracking-widest text-gray-300">
+            <a href="#" class="hover:text-blue-400 transition">Inicio</a>
+            <a href="#catalogo" class="hover:text-blue-400 transition">Catálogo</a>
+            <button onclick="toggleChat()" class="hover:text-blue-400 transition font-bold uppercase tracking-widest">Soporte</button>
+        </div>
+        <a href="https://discord.gg/4tdMZ5trzF" target="_blank" class="bg-[#5865F2] hover:bg-[#4752c4] px-4 py-2 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-bold transition discord-glow flex items-center gap-2">Discord</a>
+    </nav>
+
+    <section class="max-w-7xl mx-auto px-6 md:px-8 pt-6 md:pt-10 pb-20 grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6 text-center md:text-left">
+            <div class="inline-block bg-blue-900/30 text-blue-400 px-4 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest border border-blue-500/30">Nuestra Misión</div>
+            <h2 class="text-4xl md:text-6xl font-extrabold leading-tight">Vender, Crecer y <br> <span class="text-blue-500">Liderar el Mercado</span></h2>
+            <p class="text-gray-400 text-base md:text-lg leading-relaxed max-w-lg mx-auto md:mx-0">En <b>Moon Shop</b>, nuestro propósito es convertirnos en la tienda más barata de MM2 en Colombia.</p>
+            <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
+                <a href="#catalogo" class="bg-white text-black px-8 py-4 rounded-2xl font-bold hover:bg-blue-500 hover:text-white transition-all shadow-lg text-center">Ver Catálogo</a>
+                <div class="flex items-center justify-center gap-2 text-sm font-semibold text-blue-400"><span>●</span> Stock 2026</div>
+            </div>
+        </div>
+        <div class="relative h-[300px] md:h-[400px] flex items-center justify-center mt-10 md:mt-0">
+            <div class="absolute inset-0 bg-blue-500/10 blur-[80px] rounded-full"></div>
+            <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/b/b5/HarvesterImproved.png" class="w-48 md:w-64 h-48 md:h-64 object-contain animate-weapon z-20">
+            <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/e/eb/Icebreaker.png" class="w-32 md:w-48 h-32 md:h-48 object-contain animate-weapon-delay absolute top-0 right-4 md:right-10 z-10 opacity-50">
+            <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Updated_Candy.png" class="w-32 md:w-48 h-32 md:h-48 object-contain animate-weapon-delay absolute bottom-0 left-4 md:left-10 z-10 opacity-50">
+        </div>
+    </section>
+
+    <section id="catalogo" class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 border-t border-white/5 scroll-mt-24">
+        <div class="text-center mb-8 md:mb-12">
+            <h3 class="text-3xl font-black mb-6 uppercase tracking-tighter">Catálogo Completo</h3>
+            <div class="flex justify-center px-4">
+                <input type="text" id="weaponSearch" placeholder="Buscar arma por nombre..." class="input-field max-w-md glass border-white/20 focus:border-blue-500 text-center">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+            
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/a/a4/Snowcannon.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 1</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Snowcanon</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$117.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Snowcanon', 117000, 1, 'https://static.wikia.nocookie.net/murder-mystery-2/images/a/a4/Snowcannon.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Snowcanon', 117000, 1)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/6/6c/Wand_Full_HD.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 1</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Heartwant</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Ancient</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$47.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Heartwant', 47000, 1, 'https://static.wikia.nocookie.net/murder-mystery-2/images/6/6c/Wand_Full_HD.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Heartwant', 47000, 1)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/b/b5/HarvesterImproved.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 8</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Harvester</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Ancient</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$27.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Harvester', 27000, 8, 'https://static.wikia.nocookie.net/murder-mystery-2/images/b/b5/HarvesterImproved.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Harvester', 27000, 8)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/e/eb/Icebreaker.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 6</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Icebreaker</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$12.500 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Icebreaker', 12500, 6, 'https://static.wikia.nocookie.net/murder-mystery-2/images/e/eb/Icebreaker.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Icebreaker', 12500, 6)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Updated_Candy.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 6</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Candy</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$11.500 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Candy', 11500, 6, 'https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Updated_Candy.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Candy', 11500, 6)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/a/a9/ZombieBat.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 12</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Bat (Zombie)</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$15.500 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Bat (Zombie)', 15500, 12, 'https://static.wikia.nocookie.net/murder-mystery-2/images/a/a9/ZombieBat.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Bat (Zombie)', 15500, 12)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/d/d1/Makeshift.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 7</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Makeshift</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Ancient</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$7.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Makeshift', 7000, 7, 'https://static.wikia.nocookie.net/murder-mystery-2/images/d/d1/Makeshift.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Makeshift', 7000, 7)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/f/f8/BatwingUpdated2.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 22</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Batwing</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Ancient</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$13.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Batwing', 13000, 22, 'https://static.wikia.nocookie.net/murder-mystery-2/images/f/f8/BatwingUpdated2.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Batwing', 13000, 22)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Icewingknife.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 1</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Icewing</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Ancient</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$3.500 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Icewing', 3500, 1, 'https://static.wikia.nocookie.net/murder-mystery-2/images/1/1a/Icewingknife.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Icewing', 3500, 1)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/6/6d/Sugar_v2.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 8</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Sugar</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$7.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Sugar', 7000, 8, 'https://static.wikia.nocookie.net/murder-mystery-2/images/6/6d/Sugar_v2.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Sugar', 7000, 8)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/8/89/Icepiercer.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 5</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Icepiercer</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Ancient</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$21.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Icepiercer', 21000, 5, 'https://static.wikia.nocookie.net/murder-mystery-2/images/8/89/Icepiercer.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Icepiercer', 21000, 5)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/5/5e/ElderwoodScythev2.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 12</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Elderwood Scythe</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Ancient</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$7.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Elderwood Scythe', 7000, 12, 'https://static.wikia.nocookie.net/murder-mystery-2/images/5/5e/ElderwoodScythev2.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Elderwood Scythe', 7000, 12)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/f/fa/LugerUpdated.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 12</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Luger</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$7.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Luger', 7000, 12, 'https://static.wikia.nocookie.net/murder-mystery-2/images/f/fa/LugerUpdated.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Luger', 7000, 12)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/1/14/Shark.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 5</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Shark</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$5.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Shark', 5000, 5, 'https://static.wikia.nocookie.net/murder-mystery-2/images/1/14/Shark.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Shark', 5000, 5)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/b/ba/Vampiresedge.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 6</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Vampire Edge</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$3.500 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Vampire Edge', 3500, 6, 'https://static.wikia.nocookie.net/murder-mystery-2/images/b/ba/Vampiresedge.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Vampire Edge', 3500, 6)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/b/b6/Cookiecane.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 1</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Cookiecane</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$4.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Cookiecane', 4000, 1, 'https://static.wikia.nocookie.net/murder-mystery-2/images/b/b6/Cookiecane.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Cookiecane', 4000, 1)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/7/73/Pearl.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 1</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Pearl</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$7.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Pearl', 7000, 1, 'https://static.wikia.nocookie.net/murder-mystery-2/images/7/73/Pearl.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Pearl', 7000, 1)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/b/bd/IceBeam.png/revision/latest?cb=20211221141319" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 7</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Icebeam</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$5.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Icebeam', 5000, 7, 'https://static.wikia.nocookie.net/murder-mystery-2/images/b/bd/IceBeam.png/revision/latest?cb=20211221141319')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Icebeam', 5000, 7)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/5/5b/IceFlake.png/revision/latest?cb=20211221141308" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 8</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Iceflake</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$5.000 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Iceflake', 5000, 8, 'https://static.wikia.nocookie.net/murder-mystery-2/images/5/5b/IceFlake.png/revision/latest?cb=20211221141308')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Iceflake', 5000, 8)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] hover:scale-[1.02] transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-950/40 rounded-[1rem] md:rounded-[1.5rem] h-32 md:h-52 mb-4 flex items-center justify-center border border-white/5 relative overflow-hidden">
+                        <img src="https://static.wikia.nocookie.net/murder-mystery-2/images/e/ea/LaserUpdated.png" class="w-full h-full object-contain p-3 md:p-6 group-hover:scale-110 transition-transform">
+                        <span class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold border border-white/10 text-blue-400 uppercase">Stock: 5</span>
+                    </div>
+                    <h3 class="text-sm md:text-xl font-bold truncate">Laser</h3>
+                    <p class="text-gray-500 text-[8px] md:text-xs mb-3 md:mb-4 uppercase font-bold">Godly</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs md:text-xl font-extrabold">$5.500 <small class="text-blue-400 text-[8px] md:text-[10px]">COP</small></span>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('Laser', 5500, 5, 'https://static.wikia.nocookie.net/murder-mystery-2/images/e/ea/LaserUpdated.png')" class="bg-blue-600/20 text-blue-400 p-2 rounded-xl hover:bg-blue-600 hover:text-white transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </button>
+                        <button onclick="openModal('Laser', 5500, 5)" class="flex-1 bg-white text-black py-2 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition text-[10px] md:text-sm">Comprar</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div id="paymentModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="glass max-w-2xl w-full p-6 md:p-8 rounded-[2.5rem] relative border border-white/10 shadow-2xl overflow-y-auto max-h-[95vh]">
+            <button onclick="closeModal()" class="absolute top-4 right-6 text-gray-400 text-3xl hover:text-white transition">&times;</button>
+            <div class="grid md:grid-cols-5 gap-6 md:gap-10">
+                <div class="md:col-span-2 flex flex-col items-center justify-center text-center">
+                    <div class="bg-white p-3 rounded-[2rem] shadow-xl mb-4">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcDzl-dmkSdq1kfDUofrt0YnXm73WpKmQ8TA&s" class="w-16 md:w-20">
+                    </div>
+                    <h3 class="text-lg md:text-xl font-extrabold mb-1">Total a Pagar</h3>
+                    <p id="cartTotalDisplay" class="text-xl md:text-2xl font-black text-blue-400 mb-2">$0</p>
+                    <p id="modalItemName" class="text-blue-400 font-bold text-xs md:text-sm mb-4"></p>
+                    <div class="bg-blue-600/20 px-4 py-3 rounded-2xl border border-blue-500/30 w-full">
+                        <p class="text-[10px] text-blue-300 font-bold uppercase mb-1">Nequi / Celular</p>
+                        <p class="text-base md:text-lg font-black text-white tracking-widest leading-none">321 434 6720</p>
+                    </div>
+                </div>
+                <div class="md:col-span-3">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="h-8 w-1 bg-blue-500 rounded-full"></div>
+                        <h3 class="text-xl md:text-2xl font-extrabold">Detalles del Envío</h3>
+                    </div>
+                    <div data-fs-success class="space-y-4">
+                        <div class="p-5 bg-green-500/20 text-green-400 rounded-3xl text-sm font-bold text-center border border-green-500/30">
+                            ¡Pedido recibido! Revisamos en minutos.
+                        </div>
+                        <button onclick="resendForm()" class="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-2xl font-bold transition text-xs uppercase tracking-widest border border-white/10">Reenviar Información</button>
+                    </div>
+                    <form id="my-form" class="space-y-5">
+                        <input type="hidden" id="hiddenItem" name="Item">
+                        <div id="quantitySelector" class="bg-blue-500/5 p-4 rounded-2xl border border-blue-500/10">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="m-0 text-blue-300">Cantidad a llevar:</label>
+                                <span id="stockAvailable" class="text-[10px] bg-blue-500/20 px-2 py-0.5 rounded-md text-blue-400 font-bold"></span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <input type="number" id="itemQuantity" name="cantidad" value="1" min="1" oninput="updateTotal()" class="input-field text-center text-xl font-black w-24 border-blue-500/20">
+                                <div class="flex-1 text-right">
+                                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Subtotal Final</p>
+                                    <p id="totalPriceDisplay" class="text-xl md:text-2xl font-black text-blue-400">$0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div><label>👤 Nombre del Titular (Nequi)</label><input type="text" name="titular" placeholder="Ej: Juan Pérez" required class="input-field"></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label>🎮 Usuario Roblox</label><input type="text" name="roblox" placeholder="@Usuario" required class="input-field"></div>
+                                <div><label>💬 Usuario Discord</label><input type="text" name="discord" placeholder="@Usuario" required class="input-field"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label>📱 Número Nequi</label><input type="tel" name="numero" placeholder="321..." required class="input-field"></div>
+                                <div><label>🎵 Usuario TikTok</label><input type="text" name="usuariotiktok" placeholder="@TikTok" required class="input-field"></div>
+                            </div>
+                            <div><label>📧 Tu Correo Electrónico</label><input type="email" name="email" placeholder="ejemplo@gmail.com" required class="input-field"></div>
+                        </div>
+                        <button type="submit" id="submit-btn" class="w-full bg-blue-600 py-4 rounded-2xl font-black blue-glow transition hover:bg-blue-500 uppercase tracking-widest text-sm mt-2">Enviar Pedido Ahora</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-20 right-4 md:bottom-24 md:right-6 z-[60]">
+        <div id="cart-toast">Articulo agregado en el carrito</div>
+        <button onclick="toggleCart()" class="bg-white w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition relative group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:h-7 md:w-7 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+            <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+        </button>
+        <div id="cart-panel" class="absolute bottom-16 right-0 w-[300px] md:w-[350px] max-h-[450px] glass rounded-[2rem] flex flex-col overflow-hidden shadow-2xl border border-white/10">
+            <div class="bg-white text-black p-4 font-extrabold text-sm uppercase tracking-tighter">Mi Canasta de Armas 🛒</div>
+            <div id="cart-items" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-900/50"></div>
+            <div class="p-4 bg-white/5 border-t border-white/10">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-gray-400 uppercase">Total Sumado:</span>
+                    <span id="cart-total" class="text-xl font-black text-blue-400">$0</span>
+                </div>
+                <button onclick="checkoutCart()" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-sm uppercase hover:bg-blue-500 transition">Pagar Todo</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[60]">
+        <button onclick="toggleChat()" class="bg-blue-600 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-2xl blue-glow hover:scale-110 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:h-7 md:w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+        </button>
+        <div id="chat-panel" class="absolute bottom-16 right-0 w-[300px] md:w-[400px] h-[450px] md:h-[550px] glass rounded-[2rem] md:rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl border border-white/10">
+            <div class="bg-blue-600 p-4 md:p-5 font-bold text-sm md:text-base">Moon Assistant AI ✨</div>
+            <div id="chat-content" class="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col space-y-4 bg-slate-900/50">
+                <div class="message-bubble ai-msg">¡Hola! Soy la IA de Moon Shop. ¿Dudas con el pago al 321 434 6720?</div>
+            </div>
+            <div class="p-3 md:p-4 bg-white/5">
+                <form id="ai-form" class="flex space-x-2">
+                    <input type="text" id="ai-input" placeholder="Pregunta algo..." class="flex-1 bg-white/10 border border-white/10 p-3 md:p-4 rounded-2xl text-xs md:text-sm outline-none text-white">
+                    <button type="submit" class="bg-blue-600 p-3 md:p-4 rounded-2xl text-white">🚀</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <section class="max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
+        <div class="glass p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] text-center relative overflow-hidden">
+            <div class="relative z-10 space-y-6">
+                <div class="inline-block bg-blue-500/20 text-blue-400 px-4 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-[0.2em] border border-blue-500/30">Tu opinión importa</div>
+                <h2 class="text-3xl md:text-5xl font-black">¿Cómo fue tu <span class="text-blue-500">experiencia?</span></h2>
+                <p class="text-gray-400 text-sm md:text-lg max-w-2xl mx-auto">En Moon Shop nos esforzamos por ser los mejores.</p>
+                <div class="pt-4">
+                    <a href="https://discord.gg/PjHZctCnPQ" target="_blank" class="inline-flex items-center gap-4 bg-[#5865F2] hover:bg-[#4752c4] px-6 py-4 rounded-2xl font-black transition-all hover:scale-105 discord-glow group text-xs md:text-base">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 fill-white" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a18.27 18.27 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.947 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.946 2.419-2.157 2.419z"/></svg>
+                        <span>DISCORD</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-10 text-center text-gray-600 text-[10px] font-bold uppercase tracking-widest">
+        &copy; 2026 Moon Shop MM2 Colombia
+    </footer>
+
+    <script>
+        document.getElementById('weaponSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('#catalogo .grid > div.glass');
+            items.forEach(item => {
+                const weaponName = item.querySelector('h3').innerText.toLowerCase();
+                if (weaponName.includes(searchTerm)) {
+                    item.style.display = "flex";
+                    item.style.opacity = "1";
+                } else {
+                    item.style.display = "none";
+                    item.style.opacity = "0";
+                }
+            });
+        });
+
+        const modal = document.getElementById('paymentModal');
+        const form = document.getElementById('my-form');
+        let currentItemPrice = 0;
+        let currentItemBaseName = "";
+        let currentMaxStock = 0;
+        let resendCount = 0;
+        let isWaiting = false;
+        let cart = [];
+
+        function toggleCart() { 
+            document.getElementById('cart-panel').classList.toggle('active'); 
+            renderCart();
+        }
+
+        function addToCart(name, price, stock, image) {
+            const existing = cart.find(i => i.name === name);
+            if (existing) {
+                if(existing.qty < stock) existing.qty++;
+                else { showCartToast("⚠️ Stock máximo alcanzado"); return; }
+            } else { cart.push({ name, price, stock, image, qty: 1 }); }
+            updateCartIcon();
+            showCartToast("Articulo agregado en el carrito");
+        }
+
+        function changeQty(name, delta) {
+            const item = cart.find(i => i.name === name);
+            if (!item) return;
+            const newQty = item.qty + delta;
+            if (newQty >= 1 && newQty <= item.stock) {
+                item.qty = newQty;
+                renderCart();
+            } else if (newQty > item.stock) {
+                showCartToast("Stock máximo alcanzado");
+            }
+        }
+
+        function showCartToast(text) {
+            const toast = document.getElementById('cart-toast');
+            toast.innerText = text;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        function removeFromCart(name) {
+            cart = cart.filter(i => i.name !== name);
+            renderCart();
+            updateCartIcon();
+        }
+
+        function updateCartIcon() { document.getElementById('cart-count').innerText = cart.length; }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            const totalDisplay = document.getElementById('cart-total');
+            container.innerHTML = "";
+            let total = 0;
+            if (cart.length === 0) {
+                container.innerHTML = "<p class='text-center text-gray-500 text-xs py-10'>Tu canasta está vacía</p>";
+                totalDisplay.innerText = "$0";
+                return;
+            }
+            cart.forEach(item => {
+                total += item.price * item.qty;
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5";
+                div.innerHTML = `
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center p-1">
+                            <img src="${item.image}" class="w-full h-full object-contain">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs font-bold">${item.name}</p>
+                            <p class="text-[10px] text-blue-400">$${(item.price * item.qty).toLocaleString()}</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <button onclick="changeQty('${item.name}', -1)" class="w-6 h-6 flex items-center justify-center bg-white/10 rounded-md hover:bg-red-500/20 text-xs font-bold">-</button>
+                                <span class="text-[10px] font-black w-4 text-center">${item.qty}</span>
+                                <button onclick="changeQty('${item.name}', 1)" class="w-6 h-6 flex items-center justify-center bg-white/10 rounded-md hover:bg-blue-500/20 text-xs font-bold">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart('${item.name}')" class="text-red-400 hover:text-red-600 p-2">✕</button>`;
+                container.appendChild(div);
+            });
+            totalDisplay.innerText = "$" + total.toLocaleString();
+        }
+
+        function checkoutCart() {
+            if (cart.length === 0) return showCartToast("Añade algo primero.");
+            let summary = cart.map(i => `${i.name} (${i.qty})`).join(", ");
+            let total = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+            currentItemBaseName = "Pedido Múltiple: " + summary;
+            currentItemPrice = total;
+            openModal(currentItemBaseName, currentItemPrice, 1);
+            document.getElementById('quantitySelector').classList.add('hidden');
+            document.getElementById('itemQuantity').value = 1;
+            updateTotal();
+        }
+
+        function openModal(name, price, stock) { 
+            currentItemBaseName = name;
+            currentItemPrice = price;
+            currentMaxStock = stock;
+            modal.classList.remove('hidden'); 
+            modal.classList.remove('fs-success'); 
+            document.getElementById('quantitySelector').classList.remove('hidden');
+            document.getElementById('modalItemName').innerText = name; 
+            document.getElementById('itemQuantity').value = 1;
+            document.getElementById('stockAvailable').innerText = "DISPONIBLE: " + stock;
+            updateTotal();
+        }
+
+        function closeModal() { modal.classList.add('hidden'); }
+
+        function updateTotal() {
+            const qtyInput = document.getElementById('itemQuantity');
+            let qty = parseInt(qtyInput.value);
+            if (qty > currentMaxStock) { qtyInput.value = currentMaxStock; qty = currentMaxStock; }
+            if (qty < 1) { qtyInput.value = 1; qty = 1; }
+            const total = qty * currentItemPrice;
+            const formatted = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(total);
+            document.getElementById('totalPriceDisplay').innerText = formatted;
+            document.getElementById('cartTotalDisplay').innerText = formatted;
+            document.getElementById('hiddenItem').value = `${currentItemBaseName} | Cantidad: ${qty} | Monto: ${formatted}`;
+        }
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "PROCESANDO..."; btn.disabled = true;
+            const response = await fetch('https://formspree.io/f/mdabaowk', { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } });
+            if (response.ok) { modal.classList.add('fs-success'); cart = []; updateCartIcon(); }
+            btn.innerText = "Enviar Pedido Ahora"; btn.disabled = false;
+        };
+
+        function toggleChat() { document.getElementById('chat-panel').classList.toggle('active'); }
+        const aiForm = document.getElementById('ai-form');
+        aiForm.onsubmit = (e) => {
+            e.preventDefault();
+            const input = document.getElementById('ai-input');
+            const msg = input.value.trim().toLowerCase();
+            if (!msg) return;
+            const content = document.getElementById('chat-content');
+            const userDiv = document.createElement('div'); userDiv.className = "message-bubble user-msg"; userDiv.innerText = input.value;
+            content.appendChild(userDiv); input.value = "";
+            setTimeout(() => {
+                const aiDiv = document.createElement('div'); aiDiv.className = "message-bubble ai-msg";
+                let resp = "Para atención inmediata, únete a nuestro Discord.";
+                if(msg.includes("hola")) resp = "¡Hola! Bienvenido a Moon Shop.";
+                else if(msg.includes("nequi") || msg.includes("pago")) resp = "Recibimos pagos al Nequi 321 434 6720.";
+                aiDiv.innerText = resp; content.appendChild(aiDiv);
+                content.scrollTop = content.scrollHeight;
+            }, 600);
+        };
+    </script>
+</body>
+</html>
