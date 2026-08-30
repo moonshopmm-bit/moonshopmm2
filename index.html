@@ -42,6 +42,7 @@
         inset 0 -2px 6px rgba(0, 84, 166, 0.15);
       border: 2px solid rgba(255, 255, 255, 0.95);
       position: relative;
+      transition: max-width 0.3s ease;
     }
 
     .brand-title {
@@ -52,6 +53,13 @@
       margin-bottom: 16px;
       color: #0c2461;
       text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+    }
+
+    /* CONTENEDOR GRID DE 2 COLUMNAS EN HORIZONTAL */
+    .calc-body-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0px;
     }
 
     .form-group {
@@ -75,7 +83,7 @@
       margin-bottom: 3px;
     }
 
-    .calc-input {
+    .calc-input, .calc-select {
       width: 100%;
       padding: 9px 12px;
       border-radius: 14px;
@@ -90,7 +98,7 @@
       transition: all 0.2s ease;
     }
 
-    .calc-input:focus {
+    .calc-input:focus, .calc-select:focus {
       background: rgba(255, 255, 255, 0.95);
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 10px rgba(0, 168, 255, 0.5);
     }
@@ -116,6 +124,7 @@
       background: rgba(255, 255, 255, 0.6);
       color: #0c2461;
       margin-top: 6px;
+      margin-bottom: 14px;
     }
 
     .profit-badge-container.gain {
@@ -140,7 +149,6 @@
       border: 2px solid #00a8ff;
       border-radius: 16px;
       padding: 12px;
-      margin-top: 14px;
       box-shadow: 0 4px 12px rgba(0, 168, 255, 0.2);
     }
 
@@ -153,6 +161,19 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
+    /* MODO HORIZONTAL (LANDSCAPE) */
+    @media screen and (orientation: landscape) and (max-height: 600px), screen and (min-width: 768px) {
+      .calc-card {
+        max-width: 820px;
+        padding: 24px;
+      }
+
+      .calc-body-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -160,87 +181,110 @@
   <div class="calc-card">
     <h2 class="brand-title">🌙 Calculadora MoonShop</h2>
 
-    <div class="form-group">
-      <label class="calc-label">1. Precio StarPets (Starpex):</label>
-      
-      <div style="margin-bottom: 6px;">
-        <span class="calc-subtitle">• Precio original (USD / COP)</span>
-        <div class="grid-2">
-          <input type="number" id="calcStarPetsUSD" class="calc-input" placeholder="USD ($)" step="any">
-          <input type="text" id="calcStarPetsCOP" class="calc-input" placeholder="COP ($)" readonly>
+    <div class="calc-body-grid">
+      <div class="calc-col">
+        <div class="form-group">
+          <label class="calc-label">Seleccionar Moneda de Conversión:</label>
+          <select id="currencySelector" class="calc-select">
+            <option value="COP" selected>🇨🇴 Peso Colombiano (COP)</option>
+            <option value="USD">🇺🇸 Dólar Estadounidense (USD)</option>
+            <option value="EUR">🇪🇺 Euro (EUR)</option>
+            <option value="MXN">🇲🇽 Peso Mexicano (MXN)</option>
+            <option value="ARS">🇦🇷 Peso Argentino (ARS)</option>
+            <option value="CLP">🇨🇱 Peso Chileno (CLP)</option>
+            <option value="PEN">🇵🇪 Sol Peruano (PEN)</option>
+            <option value="BRL">🇧🇷 Real Brasileño (BRL)</option>
+            <option value="VES">🇻🇪 Bolívar Venezolano (VES)</option>
+            <option value="GBP">🇬🇧 Libra Esterlina (GBP)</option>
+            <option value="CAD">🇨🇦 Dólar Canadiense (CAD)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="calc-label">1. Precio StarPets (Starpex):</label>
+          
+          <div style="margin-bottom: 6px;">
+            <span class="calc-subtitle" id="labelOrigPrice">• Precio original (USD / COP)</span>
+            <div class="grid-2">
+              <input type="number" id="calcStarPetsUSD" class="calc-input" placeholder="USD ($)" step="any">
+              <input type="text" id="calcStarPetsCOP" class="calc-input" placeholder="Moneda local" readonly>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 6px;">
+            <span class="calc-subtitle">• Con comisión (5.4% + $0.20 USD)</span>
+            <div class="grid-2">
+              <input type="text" id="calcStarPetsCommUSD" class="calc-input" placeholder="USD con com." readonly>
+              <input type="text" id="calcStarPetsCommCOP" class="calc-input" placeholder="Moneda con com." readonly>
+            </div>
+          </div>
+
+          <div>
+            <span class="calc-subtitle" id="labelBasePrice">• Precio final base (COP)</span>
+            <input type="text" id="calcStarPetsFinalCOP" class="calc-input final-highlight" placeholder="Valor base" readonly>
+          </div>
         </div>
       </div>
 
-      <div style="margin-bottom: 6px;">
-        <span class="calc-subtitle">• Con comisión (5.4% + $0.20 USD)</span>
-        <div class="grid-2">
-          <input type="text" id="calcStarPetsCommUSD" class="calc-input" placeholder="USD con com." readonly>
-          <input type="text" id="calcStarPetsCommCOP" class="calc-input" placeholder="COP con com." readonly>
+      <div class="calc-col">
+        <div class="form-group">
+          <label class="calc-label">2. Agregar Ganancia:</label>
+          <div class="grid-2">
+            <div>
+              <span class="calc-subtitle" id="labelProfitInput">Ganancia COP ($)</span>
+              <input type="number" id="calcProfitCOP" class="calc-input" placeholder="Ej. 5000" step="any">
+            </div>
+            <div>
+              <span class="calc-subtitle">Ganancia USD ($)</span>
+              <input type="text" id="calcProfitUSD" class="calc-input" placeholder="Automático" readonly>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div>
-        <span class="calc-subtitle">• Precio final base colombiano (COP)</span>
-        <input type="text" id="calcStarPetsFinalCOP" class="calc-input final-highlight" placeholder="Valor base COP" readonly>
-      </div>
-    </div>
+        <div class="form-group">
+          <label class="calc-label">3. Descuento Aplicado:</label>
+          <div class="grid-2">
+            <div>
+              <span class="calc-subtitle" id="labelDiscountInput">Descuento COP ($)</span>
+              <input type="number" id="calcDiscountCOP" class="calc-input" placeholder="Ej. 2000" step="any">
+            </div>
+            <div>
+              <span class="calc-subtitle">Descuento USD ($)</span>
+              <input type="text" id="calcDiscountUSD" class="calc-input" placeholder="Automático" readonly>
+            </div>
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label class="calc-label">2. Agregar Ganancia:</label>
-      <div class="grid-2">
-        <div>
-          <span class="calc-subtitle">Ganancia COP ($)</span>
-          <input type="number" id="calcProfitCOP" class="calc-input" placeholder="Ej. 5000" step="any">
+        <div class="form-group">
+          <label class="calc-label">4. Precio Final de Venta:</label>
+          <div class="grid-2">
+            <div>
+              <span class="calc-subtitle">USD ($)</span>
+              <input type="number" id="calcPriceUSD" class="calc-input" placeholder="USD ($)" step="any">
+            </div>
+            <div>
+              <span class="calc-subtitle" id="labelFinalPrice">COP ($)</span>
+              <input type="text" id="calcPriceCOP" class="calc-input" placeholder="Moneda local" readonly>
+            </div>
+          </div>
         </div>
-        <div>
-          <span class="calc-subtitle">Ganancia USD ($)</span>
-          <input type="text" id="calcProfitUSD" class="calc-input" placeholder="Automático" readonly>
-        </div>
-      </div>
-    </div>
 
-    <div class="form-group">
-      <label class="calc-label">3. Descuento Aplicado:</label>
-      <div class="grid-2">
-        <div>
-          <span class="calc-subtitle">Descuento COP ($)</span>
-          <input type="number" id="calcDiscountCOP" class="calc-input" placeholder="Ej. 2000" step="any">
+        <div id="calcProfitContainer" class="profit-badge-container">
+          Ganancia / Pérdida: $0
         </div>
-        <div>
-          <span class="calc-subtitle">Descuento USD ($)</span>
-          <input type="text" id="calcDiscountUSD" class="calc-input" placeholder="Automático" readonly>
-        </div>
-      </div>
-    </div>
 
-    <div class="form-group">
-      <label class="calc-label">4. Precio Final de Venta:</label>
-      <div class="grid-2">
-        <div>
-          <span class="calc-subtitle">USD ($)</span>
-          <input type="number" id="calcPriceUSD" class="calc-input" placeholder="USD ($)" step="any">
-        </div>
-        <div>
-          <span class="calc-subtitle">COP ($)</span>
-          <input type="text" id="calcPriceCOP" class="calc-input" placeholder="COP ($)" readonly>
-        </div>
-      </div>
-    </div>
-
-    <div id="calcProfitContainer" class="profit-badge-container">
-      Ganancia / Pérdida: $0 COP
-    </div>
-
-    <div class="total-summary-box">
-      <div class="total-title">✨ Resultado Total Final ✨</div>
-      <div class="grid-2">
-        <div>
-          <span class="calc-subtitle">Total a Cobrar USD</span>
-          <input type="text" id="grandTotalUSD" class="calc-input final-highlight" placeholder="$0.00 USD" readonly>
-        </div>
-        <div>
-          <span class="calc-subtitle">Total a Cobrar COP</span>
-          <input type="text" id="grandTotalCOP" class="calc-input final-highlight" placeholder="$0 COP" readonly>
+        <div class="total-summary-box">
+          <div class="total-title">✨ Resultado Total Final ✨</div>
+          <div class="grid-2">
+            <div>
+              <span class="calc-subtitle">Total a Cobrar USD</span>
+              <input type="text" id="grandTotalUSD" class="calc-input final-highlight" placeholder="$0.00 USD" readonly>
+            </div>
+            <div>
+              <span class="calc-subtitle" id="convertedCurrencyLabel">Total en COP</span>
+              <input type="text" id="grandTotalCOP" class="calc-input final-highlight" placeholder="$0 COP" readonly>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -248,13 +292,29 @@
 
   <script>
     const USD_RATE = 3200;
+    let ratesCache = { COP: 1 };
 
-    function formatNumber(value) {
-      if (value === null || value === undefined || value === '') return '0';
-      const cleanVal = value.toString().replace(/[^0-9]/g, '');
-      const num = parseFloat(cleanVal);
-      if (isNaN(num)) return '0';
-      return num.toLocaleString('es-CO');
+    // Ejemplos dinámicos adaptados a cada moneda
+    const currencyExamples = {
+      COP: { profit: "Ej. 5000", discount: "Ej. 2000" },
+      USD: { profit: "Ej. 1.50", discount: "Ej. 0.50" },
+      EUR: { profit: "Ej. 1.50", discount: "Ej. 0.50" },
+      MXN: { profit: "Ej. 30", discount: "Ej. 10" },
+      ARS: { profit: "Ej. 1500", discount: "Ej. 500" },
+      CLP: { profit: "Ej. 1500", discount: "Ej. 500" },
+      PEN: { profit: "Ej. 5.50", discount: "Ej. 2.00" },
+      BRL: { profit: "Ej. 8.00", discount: "Ej. 3.00" },
+      VES: { profit: "Ej. 60", discount: "Ej. 20" },
+      GBP: { profit: "Ej. 1.20", discount: "Ej. 0.40" },
+      CAD: { profit: "Ej. 2.00", discount: "Ej. 0.80" }
+    };
+
+    function formatFormattedCurrency(value, curr = 'COP') {
+      if (value === null || value === undefined || isNaN(value)) return `0 ${curr}`;
+      if (curr === 'COP') {
+        return `$${Math.round(value).toLocaleString('es-CO')} COP`;
+      }
+      return `${value.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${curr}`;
     }
 
     const inputStarPetsUSD = document.getElementById('calcStarPetsUSD');
@@ -275,86 +335,115 @@
 
     const grandTotalUSD = document.getElementById('grandTotalUSD');
     const grandTotalCOP = document.getElementById('grandTotalCOP');
+    const currencySelector = document.getElementById('currencySelector');
+    const convertedCurrencyLabel = document.getElementById('convertedCurrencyLabel');
+
+    const labelOrigPrice = document.getElementById('labelOrigPrice');
+    const labelBasePrice = document.getElementById('labelBasePrice');
+    const labelProfitInput = document.getElementById('labelProfitInput');
+    const labelDiscountInput = document.getElementById('labelDiscountInput');
+    const labelFinalPrice = document.getElementById('labelFinalPrice');
+
+    async function fetchRates() {
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/COP');
+        const data = await res.json();
+        if (data && data.rates) {
+          ratesCache = data.rates;
+        }
+      } catch (err) {
+        console.warn('Uso de tasas por defecto');
+      }
+    }
+    fetchRates();
 
     function calculateProfit() {
+      const selectedCurrency = currencySelector.value;
+      const rate = ratesCache[selectedCurrency] || 1;
+
+      // Actualizar ejemplos (placeholders) según la moneda seleccionada
+      const example = currencyExamples[selectedCurrency] || { profit: "Ej. 10", discount: "Ej. 5" };
+      inputProfitCOP.placeholder = example.profit;
+      inputDiscountCOP.placeholder = example.discount;
+
+      labelOrigPrice.innerText = `• Precio original (USD / ${selectedCurrency})`;
+      labelBasePrice.innerText = `• Precio final base (${selectedCurrency})`;
+      labelProfitInput.innerText = `Ganancia ${selectedCurrency} ($)`;
+      labelDiscountInput.innerText = `Descuento ${selectedCurrency} ($)`;
+      labelFinalPrice.innerText = `${selectedCurrency} ($)`;
+      convertedCurrencyLabel.innerText = `Total en ${selectedCurrency}`;
+
       const starPetsUSD = parseFloat(inputStarPetsUSD.value) || 0;
-      const profitCOP = parseFloat(inputProfitCOP.value) || 0;
-      const discountCOP = parseFloat(inputDiscountCOP.value) || 0;
+      
+      const inputProfitVal = parseFloat(inputProfitCOP.value) || 0;
+      const inputDiscountVal = parseFloat(inputDiscountCOP.value) || 0;
+
+      const profitCOP = selectedCurrency === 'COP' ? inputProfitVal : (inputProfitVal / rate);
+      const discountCOP = selectedCurrency === 'COP' ? inputDiscountVal : (inputDiscountVal / rate);
+
+      if (inputProfitCOP.value !== '') {
+        const profitUSD = profitCOP / USD_RATE;
+        inputProfitUSD.value = `$${profitUSD.toFixed(2)}`;
+      } else {
+        inputProfitUSD.value = '';
+      }
+
+      if (inputDiscountCOP.value !== '') {
+        const discountUSD = discountCOP / USD_RATE;
+        inputDiscountUSD.value = `$${discountUSD.toFixed(2)}`;
+      } else {
+        inputDiscountUSD.value = '';
+      }
 
       const totalStarPetsUSD = starPetsUSD > 0 ? (starPetsUSD * 1.054) + 0.2 : 0;
       const starPetsCOP = Math.round(totalStarPetsUSD * USD_RATE);
 
-      const finalPriceCOP = Math.max(0, starPetsCOP + profitCOP - discountCOP);
-      const finalPriceUSD = finalPriceCOP / USD_RATE;
-
       if (starPetsUSD > 0) {
+        const origCOP = Math.round(starPetsUSD * USD_RATE);
+        inputStarPetsCOP.value = formatFormattedCurrency(origCOP * rate, selectedCurrency);
+
+        inputStarPetsCommUSD.value = `$${totalStarPetsUSD.toFixed(2)}`;
+        inputStarPetsCommCOP.value = formatFormattedCurrency(starPetsCOP * rate, selectedCurrency);
+        inputStarPetsFinalCOP.value = formatFormattedCurrency(starPetsCOP * rate, selectedCurrency);
+
+        const finalPriceCOP = Math.max(0, starPetsCOP + profitCOP - discountCOP);
+        const finalPriceUSD = finalPriceCOP / USD_RATE;
+
         inputPriceUSD.value = Number(finalPriceUSD.toFixed(2));
-        inputPriceCOP.value = formatNumber(finalPriceCOP);
+        inputPriceCOP.value = formatFormattedCurrency(finalPriceCOP * rate, selectedCurrency);
         
         grandTotalUSD.value = `$${finalPriceUSD.toFixed(2)} USD`;
-        grandTotalCOP.value = `$${formatNumber(finalPriceCOP)} COP`;
-      } else {
-        grandTotalUSD.value = '$0.00 USD';
-        grandTotalCOP.value = '$0 COP';
-      }
-
-      const netProfitCOP = profitCOP - discountCOP;
-
-      profitContainer.classList.remove('gain', 'loss');
-
-      if (netProfitCOP > 0) {
-        profitContainer.classList.add('gain');
-        profitContainer.innerText = `Ganancia Neta: +$${formatNumber(netProfitCOP)} COP`;
-      } else if (netProfitCOP < 0) {
-        profitContainer.classList.add('loss');
-        profitContainer.innerText = `Pérdida: -$${formatNumber(Math.abs(netProfitCOP))} COP`;
-      } else {
-        profitContainer.innerText = `Sin Ganancia / Pérdida ($0 COP)`;
-      }
-    }
-
-    inputStarPetsUSD.addEventListener('input', (e) => {
-      const usdVal = parseFloat(e.target.value);
-      if (!isNaN(usdVal) && usdVal >= 0) {
-        const copVal = Math.round(usdVal * USD_RATE);
-        inputStarPetsCOP.value = formatNumber(copVal);
-
-        const totalUSD = (usdVal * 1.054) + 0.2;
-        inputStarPetsCommUSD.value = `$${totalUSD.toFixed(2)}`;
-
-        const totalCOP = Math.round(totalUSD * USD_RATE);
-        inputStarPetsCommCOP.value = formatNumber(totalCOP);
-        inputStarPetsFinalCOP.value = `$${formatNumber(totalCOP)} COP`;
+        grandTotalCOP.value = formatFormattedCurrency(finalPriceCOP * rate, selectedCurrency);
       } else {
         inputStarPetsCOP.value = '';
         inputStarPetsCommUSD.value = '';
         inputStarPetsCommCOP.value = '';
         inputStarPetsFinalCOP.value = '';
+        inputPriceUSD.value = '';
+        inputPriceCOP.value = '';
+        grandTotalUSD.value = '$0.00 USD';
+        grandTotalCOP.value = `0 ${selectedCurrency}`;
       }
-      calculateProfit();
-    });
 
-    inputProfitCOP.addEventListener('input', (e) => {
-      const profitCOPVal = parseFloat(e.target.value);
-      if (!isNaN(profitCOPVal)) {
-        const profitUSD = profitCOPVal / USD_RATE;
-        inputProfitUSD.value = `$${profitUSD.toFixed(2)}`;
-      } else {
-        inputProfitUSD.value = '';
-      }
-      calculateProfit();
-    });
+      const netProfitInSelectedCurr = (profitCOP - discountCOP) * rate;
 
-    inputDiscountCOP.addEventListener('input', (e) => {
-      const discountCOPVal = parseFloat(e.target.value);
-      if (!isNaN(discountCOPVal)) {
-        const discountUSD = discountCOPVal / USD_RATE;
-        inputDiscountUSD.value = `$${discountUSD.toFixed(2)}`;
+      profitContainer.classList.remove('gain', 'loss');
+
+      if (netProfitInSelectedCurr > 0) {
+        profitContainer.classList.add('gain');
+        profitContainer.innerText = `Ganancia Neta: +${formatFormattedCurrency(netProfitInSelectedCurr, selectedCurrency)}`;
+      } else if (netProfitInSelectedCurr < 0) {
+        profitContainer.classList.add('loss');
+        profitContainer.innerText = `Pérdida: -${formatFormattedCurrency(Math.abs(netProfitInSelectedCurr), selectedCurrency)}`;
       } else {
-        inputDiscountUSD.value = '';
+        profitContainer.innerText = `Sin Ganancia / Pérdida (0 ${selectedCurrency})`;
       }
-      calculateProfit();
-    });
+    }
+
+    currencySelector.addEventListener('change', calculateProfit);
+    inputStarPetsUSD.addEventListener('input', calculateProfit);
+    inputProfitCOP.addEventListener('input', calculateProfit);
+    inputDiscountCOP.addEventListener('input', calculateProfit);
   </script>
 </body>
 </html>
